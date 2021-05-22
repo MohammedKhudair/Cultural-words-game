@@ -32,13 +32,13 @@ public class ShareActivity extends AppCompatActivity {
         imageViewQuestion = findViewById(R.id.share_image_view_question);
         editTextTitle = findViewById(R.id.edit_text_share_title);
 
-        questionImage = getIntent().getIntExtra("IMAGE_VIEW__QUESTION", 0);
+        questionImage = getIntent().getIntExtra(Constants.IMAGE_VIEW_QUESTION, 0);
         imageViewQuestion.setImageResource(questionImage);
 
         // حفظ بيانات عنوان المشاركة
-        SharedPreferences sharedPreferences = getSharedPreferences("SAVE_ShareTitle", MODE_PRIVATE);
+        SharedPreferences sharedPreferences = getSharedPreferences(Constants.SAVE_ShareTitle, MODE_PRIVATE);
         if (!sharedPreferences.equals("")) {
-            editTextTitle.setText(sharedPreferences.getString("ShareTitle_KEY", ""));
+            editTextTitle.setText(sharedPreferences.getString(Constants.ShareTitle_KEY, ""));
         }
     }
     //  تقوم هذه الداله بمشاركة الصورة عبر التطبيقات الاخرى
@@ -70,9 +70,9 @@ public class ShareActivity extends AppCompatActivity {
     }
     // حفض عنوان النشاركة
     private void saveShareTitle(String title) {
-        SharedPreferences sharedPreferences = getSharedPreferences("SAVE_ShareTitle", MODE_PRIVATE);
+        SharedPreferences sharedPreferences = getSharedPreferences(Constants.SAVE_ShareTitle, MODE_PRIVATE);
         SharedPreferences.Editor editor = sharedPreferences.edit();
-        editor.putString("ShareTitle_KEY", title);
+        editor.putString(Constants.ShareTitle_KEY, title);
         editor.apply();
     }
 }

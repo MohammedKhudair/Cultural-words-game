@@ -21,8 +21,6 @@ import java.util.Random;
 
 public class MainActivity extends AppCompatActivity {
 
-    private static final int PERMISSIONS_WRITE_EXTERNAL_STORAGE = 123;
-
     private ImageView imageViewQuestion;
     int[] mCulturePictures = {
             R.drawable.icon_1,
@@ -49,8 +47,8 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         // يتم تغيير الغة المحفوضه عند بدء الدالة
-        SharedPreferences sharedPreferences = getSharedPreferences("SAVE_language", MODE_PRIVATE);
-        String language = sharedPreferences.getString("LANGUAGE_KEY", "");
+        SharedPreferences sharedPreferences = getSharedPreferences(Constants.SAVE_language, MODE_PRIVATE);
+        String language = sharedPreferences.getString(Constants.LANGUAGE_KEY, "");
         if (!language.equals("")) {
             LocaleHelper.setLocale(MainActivity.this, language);
         }
@@ -60,7 +58,7 @@ public class MainActivity extends AppCompatActivity {
         mAnswerDescription = getResources().getStringArray(R.array.answer_description);
 
         imageViewQuestion = findViewById(R.id.image_view_question);
-
+      // عرض صوره عشوائية
         showRandomImage();
     }
    //   Change picture in a random way
@@ -70,14 +68,14 @@ public class MainActivity extends AppCompatActivity {
    // عرض الاجابه الصحيحه
     public void openAnswerButton(View view) {
         Intent intent = new Intent(MainActivity.this, AnswerActivity.class);
-        intent.putExtra("ANSWER_DETAILS", mCurrentAnswer + ": " + mCurrentAnswerDescription);
+        intent.putExtra(Constants.ANSWER_DETAILS, mCurrentAnswer + ": " + mCurrentAnswerDescription);
         startActivity(intent);
     }
  //  مشاركة الصوره
     public void shareImageButton(View view) {
         // كود مشاركة الصورة هنا
         Intent intent = new Intent(MainActivity.this, ShareActivity.class);
-        intent.putExtra("IMAGE_VIEW__QUESTION", mCurrentPicture);
+        intent.putExtra(Constants.IMAGE_VIEW_QUESTION, mCurrentPicture);
         startActivity(intent);
     }
     //  تغيير اللغة
@@ -109,14 +107,14 @@ public class MainActivity extends AppCompatActivity {
                 }).create();
         dialog.show();
     }
-
+    // دالة حفظ الغة عند اختيار احد الغات
     private void saveLanguage(String language) {
-        SharedPreferences sharedPreferences = getSharedPreferences("SAVE_language", MODE_PRIVATE);
+        SharedPreferences sharedPreferences = getSharedPreferences(Constants.SAVE_language, MODE_PRIVATE);
         SharedPreferences.Editor editor = sharedPreferences.edit();
-        editor.putString("LANGUAGE_KEY", language);
+        editor.putString(Constants.LANGUAGE_KEY, language);
         editor.apply();
     }
-
+    // عرض صوره عشوائية
     public void showRandomImage() {
         Random random = new Random();
         int randomPictureIndex = random.nextInt(mCulturePictures.length);
@@ -125,7 +123,7 @@ public class MainActivity extends AppCompatActivity {
         mCurrentAnswerDescription = mAnswerDescription[randomPictureIndex];
         showImageOnScreen(randomPictureIndex);
     }
-
+  // عرض الصوره على الشاشة
     private void showImageOnScreen(int image) {
         Drawable drawable = ContextCompat.getDrawable(this, mCulturePictures[image]);
         imageViewQuestion.setImageDrawable(drawable);
