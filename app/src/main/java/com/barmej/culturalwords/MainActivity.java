@@ -56,28 +56,44 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
         mAnswers = getResources().getStringArray(R.array.answers);
         mAnswerDescription = getResources().getStringArray(R.array.answer_description);
-
         imageViewQuestion = findViewById(R.id.image_view_question);
-      // عرض صوره عشوائية
+
+        // عرض صوره عشوائية
         showRandomImage();
+
+        //  يتم استعمال هذا الكود عند تغير الغه.
+        //  لانه لايتم استدعاء دالة "onSaveInstanceState" عند تغيير الغه بشكل يدوي
+        SharedPreferences sharedPreferencesState = getSharedPreferences(Constants.SAVE_DATA, MODE_PRIVATE);
+        int currentPicture = sharedPreferencesState.getInt(Constants.CURRENT_PICTURE_KEY, -1);
+        if (currentPicture != -1) {
+            mCurrentPicture = currentPicture;
+            mCurrentAnswer = sharedPreferencesState.getString(Constants.CURRENT_ANSWER_KEY, "No value");
+            mCurrentAnswerDescription = sharedPreferencesState.getString(Constants.CURRENT_ANSWER_D_KEY, "No value");
+            imageViewQuestion.setImageResource(mCurrentPicture);
+            sharedPreferencesState.edit().clear().apply();
+        }
     }
-   //   Change picture in a random way
+
+    //   Change picture in a random way
     public void changeImageButton(View view) {
         showRandomImage();
     }
-   // عرض الاجابه الصحيحه
+
+    // عرض الاجابه الصحيحه
     public void openAnswerButton(View view) {
         Intent intent = new Intent(MainActivity.this, AnswerActivity.class);
         intent.putExtra(Constants.ANSWER_DETAILS, mCurrentAnswer + ": " + mCurrentAnswerDescription);
         startActivity(intent);
     }
- //  مشاركة الصوره
+
+    //  مشاركة الصوره
     public void shareImageButton(View view) {
         // كود مشاركة الصورة هنا
         Intent intent = new Intent(MainActivity.this, ShareActivity.class);
         intent.putExtra(Constants.IMAGE_VIEW_QUESTION, mCurrentPicture);
         startActivity(intent);
     }
+
     //  تغيير اللغة
     public void changeLanguageButton(View view) {
         AlertDialog dialog = new AlertDialog.Builder(this)
@@ -106,7 +122,16 @@ public class MainActivity extends AppCompatActivity {
                     }
                 }).create();
         dialog.show();
+        //  حفض بيانات الحاله عند تغير الغة
+        SharedPreferences sharedPreferences = getSharedPreferences(Constants.SAVE_DATA, MODE_PRIVATE);
+        SharedPreferences.Editor editor = sharedPreferences.edit();
+        editor.putInt(Constants.CURRENT_PICTURE_KEY, mCurrentPicture);
+        editor.putString(Constants.CURRENT_ANSWER_KEY, mCurrentAnswer);
+        editor.putString(Constants.CURRENT_ANSWER_D_KEY, mCurrentAnswerDescription);
+        editor.apply();
+
     }
+
     // دالة حفظ الغة عند اختيار احد الغات
     private void saveLanguage(String language) {
         SharedPreferences sharedPreferences = getSharedPreferences(Constants.SAVE_language, MODE_PRIVATE);
@@ -114,6 +139,7 @@ public class MainActivity extends AppCompatActivity {
         editor.putString(Constants.LANGUAGE_KEY, language);
         editor.apply();
     }
+
     // عرض صوره عشوائية
     public void showRandomImage() {
         Random random = new Random();
@@ -123,12 +149,31 @@ public class MainActivity extends AppCompatActivity {
         mCurrentAnswerDescription = mAnswerDescription[randomPictureIndex];
         showImageOnScreen(randomPictureIndex);
     }
-  // عرض الصوره على الشاشة
+
+    // عرض الصوره على الشاشة
     private void showImageOnScreen(int image) {
         Drawable drawable = ContextCompat.getDrawable(this, mCulturePictures[image]);
         imageViewQuestion.setImageDrawable(drawable);
     }
 
+    @Override
+    protected void onSaveInstanceState(@NonNull Bundle outState) {
+        super.onSaveInstanceState(outState);
+        outState.putInt("CURRENT_PICTURE", mCurrentPicture);
+        outState.putString("CURRENT_ANSWER", mCurrentAnswer);
+        outState.putString("CURRENT_ANSWER_DESCRIPTION", mCurrentAnswerDescription);
+        Toast.makeText(this, "onSaveInstanceState", Toast.LENGTH_SHORT).show();
+    }
 
+    @Override
+    protected void onRestoreInstanceState(Bundle savedInstanceState) {
+        super.onRestoreInstanceState(savedInstanceState);
+        if (savedInstanceState != null) {
+            mCurrentPicture = savedInstanceState.getInt("CURRENT_PICTURE", 1);
+            mCurrentAnswer = savedInstanceState.getString("CURRENT_ANSWER");
+            mCurrentAnswerDescription = savedInstanceState.getString("CURRENT_ANSWER_DESCRIPTION");
+            imageViewQuestion.setImageResource(mCurrentPicture);
+        }
+    }
 
 }

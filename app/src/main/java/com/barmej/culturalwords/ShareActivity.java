@@ -1,6 +1,7 @@
 package com.barmej.culturalwords;
 
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.content.FileProvider;
 
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -12,6 +13,7 @@ import android.os.StrictMode;
 import android.view.View;
 import android.widget.EditText;
 import android.widget.ImageView;
+import android.widget.Toast;
 
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -24,6 +26,7 @@ public class ShareActivity extends AppCompatActivity {
 
     BitmapDrawable bitmapDrawable;
     Bitmap bitmap;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -41,33 +44,42 @@ public class ShareActivity extends AppCompatActivity {
             editTextTitle.setText(sharedPreferences.getString(Constants.ShareTitle_KEY, ""));
         }
     }
+
     //  تقوم هذه الداله بمشاركة الصورة عبر التطبيقات الاخرى
     public void shareImageQuestion(View view) {
         String title = editTextTitle.getText().toString();
-        // حفض عنوان النشاركة
+        // حفض عنوان المشاركة
         saveShareTitle(editTextTitle.getText().toString());
 
-        StrictMode.VmPolicy.Builder builder = new StrictMode.VmPolicy.Builder();
-        StrictMode.setVmPolicy(builder.build());
-        bitmapDrawable = (BitmapDrawable) imageViewQuestion.getDrawable();
-        bitmap = bitmapDrawable.getBitmap();
-        File file = new File(getExternalCacheDir() + "/" + "Beautiful image" + ".png");
-        Intent intent;
+        BitmapDrawable bitmapDrawable = (BitmapDrawable) imageViewQuestion.getDrawable();
+        Bitmap bitmap = bitmapDrawable.getBitmap();
+
+        Uri uri = getmageToShare(bitmap);
+        Intent intent = new Intent(Intent.ACTION_SEND);
+        intent.putExtra(Intent.EXTRA_STREAM, uri);
+        intent.putExtra(Intent.EXTRA_SUBJECT, title);
+        intent.setType("image/png");
+        startActivity(Intent.createChooser(intent, "Share Via"));
+    }
+
+    // Retrieving the url to share
+    private Uri getmageToShare(Bitmap bitmap) {
+        File imageFolder = new File(getCacheDir(), "images");
+        Uri uri = null;
         try {
+            imageFolder.mkdirs();
+            File file = new File(imageFolder, "shared_image.png");
             FileOutputStream outputStream = new FileOutputStream(file);
-            bitmap.compress(Bitmap.CompressFormat.PNG, 100, outputStream);
+            bitmap.compress(Bitmap.CompressFormat.PNG, 90, outputStream);
             outputStream.flush();
             outputStream.close();
-            intent = new Intent(Intent.ACTION_SEND);
-            intent.setType("image/*");
-            intent.putExtra(Intent.EXTRA_TEXT, title);
-            intent.putExtra(Intent.EXTRA_STREAM, Uri.fromFile(file));
-            intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+            uri = FileProvider.getUriForFile(this, "com.barmej.culturalwords.fileprovider", file);
         } catch (Exception e) {
-            throw new RuntimeException(e);
+            Toast.makeText(this, "" + e.getMessage(), Toast.LENGTH_LONG).show();
         }
-        startActivity(Intent.createChooser(intent, "Share image via: "));
+        return uri;
     }
+
     // حفض عنوان النشاركة
     private void saveShareTitle(String title) {
         SharedPreferences sharedPreferences = getSharedPreferences(Constants.SAVE_ShareTitle, MODE_PRIVATE);

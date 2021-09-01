@@ -10,4 +10,8 @@ public class Constants {
     public static final String SAVE_ShareTitle = "SAVE_ShareTitle";
     public static final String ShareTitle_KEY = "ShareTitle_KEY";
 
+    public static final String SAVE_DATA = "SAVE_DATA";
+    public static final String CURRENT_PICTURE_KEY = "CURRENT_PICTURE_KEY";
+    public static final String CURRENT_ANSWER_KEY = "CURRENT_ANSWER_KEY";
+    public static final String CURRENT_ANSWER_D_KEY = "CURRENT_ANSWER_D_KEY";
 }
