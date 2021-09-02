@@ -61,8 +61,8 @@ public class MainActivity extends AppCompatActivity {
         // عرض صوره عشوائية
         showRandomImage();
 
-        //  يتم استعمال هذا الكود عند تغير الغه.
-        //  لانه لايتم استدعاء دالة "onSaveInstanceState" عند تغيير الغه بشكل يدوي
+         // This code is used when the language changed,
+        // because the "onSaveInstanceState" function is not called when manually changing the language     
         SharedPreferences sharedPreferencesState = getSharedPreferences(Constants.SAVE_DATA, MODE_PRIVATE);
         int currentPicture = sharedPreferencesState.getInt(Constants.CURRENT_PICTURE_KEY, -1);
         if (currentPicture != -1) {
