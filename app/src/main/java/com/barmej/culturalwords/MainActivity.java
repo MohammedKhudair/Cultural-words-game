@@ -162,7 +162,6 @@ public class MainActivity extends AppCompatActivity {
         outState.putInt("CURRENT_PICTURE", mCurrentPicture);
         outState.putString("CURRENT_ANSWER", mCurrentAnswer);
         outState.putString("CURRENT_ANSWER_DESCRIPTION", mCurrentAnswerDescription);
-        Toast.makeText(this, "onSaveInstanceState", Toast.LENGTH_SHORT).show();
     }
 
     @Override
